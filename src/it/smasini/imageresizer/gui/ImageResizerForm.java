@@ -2,6 +2,7 @@ package it.smasini.imageresizer.gui;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import it.smasini.imageresizer.files.Renamer;
 import it.smasini.imageresizer.images.Resizer;
 
 import javax.swing.*;
@@ -42,7 +43,9 @@ public class ImageResizerForm {
         buttonStartResize.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Resizer resizer = new Resizer("/Users/Simone/Desktop/workspace/ic_time_lock.png", radioRes.isSelected());
+                Renamer renamer = new Renamer();
+
+                Resizer resizer = new Resizer("/Users/Simone/Desktop/workspace/ic_time_lock.png", radioRes.isSelected(), renamer);
                 resizer.scale();
                 //Messages.showErrorDialog(project, "Parsing JSON failed, see detail on Event Log", "Error");
                 Messages.showInfoMessage(project, "Resizing success!", "Success");

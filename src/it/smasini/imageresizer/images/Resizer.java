@@ -1,6 +1,8 @@
 package it.smasini.imageresizer.images;
 
 import com.intellij.util.ui.UIUtil;
+import it.smasini.imageresizer.ResType;
+import it.smasini.imageresizer.files.Renamer;
 import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
@@ -17,14 +19,16 @@ public class Resizer {
 
     private String imageFilePath;
     private boolean generateAllRes;
+    private Renamer renamer;
 
     private BufferedImage originalImage;
     private int originalImageType;
     private String filename, extension;
 
-    public Resizer(String imageFilePath, boolean generateAllRes) {
+    public Resizer(String imageFilePath, boolean generateAllRes, Renamer renamer) {
         this.imageFilePath = imageFilePath;
         this.generateAllRes = generateAllRes;
+        this.renamer = renamer;
         getOriginalImage();
     }
 
@@ -43,12 +47,18 @@ public class Resizer {
         String[] arr2 = filename.split("\\.");
         extension = arr2[arr2.length-1];
         filename = filename.substring(0, filename.indexOf("." + extension));
+        renamer.setFileName(filename);
+        filename = renamer.rename();
     }
 
     public void scale(){
         if(generateAllRes){
             int originalWidth = originalImage.getWidth();
             int originalHeigth = originalImage.getHeight();
+
+            for(ResType resType : ResType.values()){
+                
+            }
 
             //TODO for every type of res i need to calculatate the width and height
             scaleAndSave(originalWidth/2, originalHeigth/2, "/Users/Simone/Desktop/workspace/" + filename + "-resized." + extension);
@@ -60,8 +70,8 @@ public class Resizer {
     }
 
     private BufferedImage resizeImage(int width, int height){
-        return getScaledInstance(width, height);
-        //return Scalr.resize(originalImage, Scalr.Method.BALANCED, width, height);
+        //return getScaledInstance(width, height);
+        return Scalr.resize(originalImage, Scalr.Method.ULTRA_QUALITY, width, height);
         /*BufferedImage resizedImage = UIUtil.createImage(width, height, originalImageType);
         Graphics2D g = resizedImage.createGraphics();
         g.drawImage(originalImage, 0, 0, width, height, null);
@@ -77,8 +87,9 @@ public class Resizer {
         }
     }
 
+
     public BufferedImage getScaledInstance(int targetWidth, int targetHeight){
-        return getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_AREA_AVERAGING, true);
+        return getScaledInstance(targetWidth, targetHeight, null, true);
     }
 
     public BufferedImage getScaledInstance(int targetWidth, int targetHeight, Object hint){
@@ -86,7 +97,6 @@ public class Resizer {
     }
 
     public BufferedImage getScaledInstance(int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
-        //int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         BufferedImage ret = originalImage;
         int w, h;
         if (higherQuality) {
@@ -118,11 +128,11 @@ public class Resizer {
             }
 
             BufferedImage tmp = UIUtil.createImage(w, h, originalImageType);
-            //BufferedImage tmp = new BufferedImage(w, h, type);
             Graphics2D g2 = tmp.createGraphics();
             if(hint!=null) {
                 g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
             }
+            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g2.drawImage(ret, 0, 0, w, h, null);
             g2.dispose();
 
