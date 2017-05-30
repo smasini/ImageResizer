@@ -46,6 +46,7 @@ public class ImageResizerForm {
                 resizer.scale();
                 //Messages.showErrorDialog(project, "Parsing JSON failed, see detail on Event Log", "Error");
                 Messages.showInfoMessage(project, "Resizing success!", "Success");
+                frame.dispose();
             }
         });
     }
