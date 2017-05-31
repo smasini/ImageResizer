@@ -10,13 +10,20 @@ public enum ResType {
     HDPI,
     MDPI;
 
-    public double percentage;
+    public int percentage;
+    public String folder;
 
     static {
         XXXHDPI.percentage = 100;
-        XXHDPI.percentage = 100;
-        XHDPI.percentage = 100;
-        HDPI.percentage = 100;
-        MDPI.percentage = 100;
+        XXHDPI.percentage = 75;
+        XHDPI.percentage = 50;
+        HDPI.percentage = 38;
+        MDPI.percentage = 25;
+
+        XXXHDPI.folder = "drawable-xxxhdpi";
+        XXHDPI.folder = "drawable-xxhdpi";
+        XHDPI.folder = "drawable-xhdpi";
+        HDPI.folder = "drawable-hdpi";
+        MDPI.folder = "drawable-mdpi";
     }
 }

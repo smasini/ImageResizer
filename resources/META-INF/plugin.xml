@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>it.smasini.imageresizer</id>
   <name>Image Resizer</name>
-  <version>1.0.9</version>
+  <version>1.0.12</version>
   <vendor email="simone.masini92@gmail.com" url="https://github.com/smasini">Simone Masini</vendor>
 
   <description><![CDATA[

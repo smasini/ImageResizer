@@ -2,6 +2,7 @@ package it.smasini.imageresizer.images;
 
 import com.intellij.util.ui.UIUtil;
 import it.smasini.imageresizer.ResType;
+import it.smasini.imageresizer.Utility;
 import it.smasini.imageresizer.files.Renamer;
 import org.imgscalr.Scalr;
 
@@ -17,7 +18,7 @@ import java.io.IOException;
  */
 public class Resizer {
 
-    private String imageFilePath;
+    private String imageFilePath, resFilePath;
     private boolean generateAllRes;
     private Renamer renamer;
 
@@ -29,6 +30,8 @@ public class Resizer {
         this.imageFilePath = imageFilePath;
         this.generateAllRes = generateAllRes;
         this.renamer = renamer;
+        //TODO cercare di ottenere questa cartella dinamicamente dal progetto in corso, oppure farla selezionare all'utente
+        resFilePath = "/Users/Simone/Desktop/workspace/";
         getOriginalImage();
     }
 
@@ -57,11 +60,16 @@ public class Resizer {
             int originalHeigth = originalImage.getHeight();
 
             for(ResType resType : ResType.values()){
-                
-            }
+                int w = (int) Utility.getPercentage(resType.percentage, originalWidth);
+                int h = (int) Utility.getPercentage(resType.percentage, originalHeigth);
 
-            //TODO for every type of res i need to calculatate the width and height
-            scaleAndSave(originalWidth/2, originalHeigth/2, "/Users/Simone/Desktop/workspace/" + filename + "-resized." + extension);
+                String dest = resFilePath + resType.folder;
+                Utility.createFolderIfNeeded(dest);
+                dest = dest + "/" + filename + "." + extension;
+                scaleAndSave(w, h, dest);
+            }
+        }else{
+            //TODO prendere dei dati tipo la percentuale o la dimensione precisa per poter scalare una singola immagine e metterla in una cartella scelta dall'utente
         }
     }
 
