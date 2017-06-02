@@ -26,15 +26,19 @@ public class Resizer {
     private int originalImageType;
     private String filename, extension;
 
-    public Resizer(String imageFilePath, boolean generateAllRes, Renamer renamer) {
-        this.imageFilePath = imageFilePath;
+    public Resizer(boolean generateAllRes, Renamer renamer, String resFilePath) {
         this.generateAllRes = generateAllRes;
         this.renamer = renamer;
-        //TODO cercare di ottenere questa cartella dinamicamente dal progetto in corso, oppure farla selezionare all'utente
-        resFilePath = "/Users/Simone/Desktop/workspace/";
-        getOriginalImage();
+        this.resFilePath = resFilePath;
+        if(!this.resFilePath.endsWith("/")){
+            this.resFilePath += "/";
+        }
     }
 
+    public void setImage(String imageFilePath){
+        this.imageFilePath = imageFilePath;
+        getOriginalImage();
+    }
 
     private void getOriginalImage(){
         try {

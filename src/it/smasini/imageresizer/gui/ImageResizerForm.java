@@ -1,5 +1,6 @@
 package it.smasini.imageresizer.gui;
 
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.fileChooser.FileChooser;
 import com.intellij.openapi.fileChooser.FileChooserDescriptor;
 import com.intellij.openapi.project.Project;
@@ -47,9 +48,12 @@ public class ImageResizerForm {
     private JTextField textFieldPxH;
     private JLabel labelHeigth;
     private JLabel labelWidth;
+    private JProgressBar progressBar;
+    private JLabel status;
 
     private JFrame frame;
     private Project project;
+    private VirtualFile[] virtualFiles;
 
     public ImageResizerForm(Project project) {
         this.project = project;
@@ -83,11 +87,25 @@ public class ImageResizerForm {
                 renamer.setReplacePattern(textFieldPattern.getText());
                 renamer.setReplaceWith(textFieldReplaceWith.getText());
 
-                Resizer resizer = new Resizer("/Users/Simone/Desktop/workspace/ic_time_lock.png", radioRes.isSelected(), renamer);
-                resizer.scale();
-                //Messages.showErrorDialog(project, "Parsing JSON failed, see detail on Event Log", "Error");
-                Messages.showInfoMessage(project, "Resizing success!", "Success");
-                frame.dispose();
+                Resizer resizer = new Resizer(radioRes.isSelected(), renamer, textFieldResFolder.getText());
+
+                progressBar.setMaximum(virtualFiles.length);
+                ApplicationManager.getApplication().invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        for(VirtualFile virtualFile : virtualFiles){
+                            resizer.setImage(virtualFile.getPath());
+                            resizer.scale();
+                            progressBar.setValue(progressBar.getValue()+1);
+
+                        }
+                        //resizer.setImage("/Users/Simone/Desktop/workspace/ic_time_lock.png");
+                        //resizer.scale();
+                        //Messages.showErrorDialog(project, "Parsing JSON failed, see detail on Event Log", "Error");
+                        Messages.showInfoMessage(project, "Resizing success!", "Success");
+                        frame.dispose();
+                    }
+                });
             }
         });
         ChangeListener radioChange = new ChangeListener() {
@@ -149,30 +167,14 @@ public class ImageResizerForm {
 
     private void showFileChoicerForImages() {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(true, false, false, false, false, true);
-        VirtualFile virtualFile = FileChooser.chooseFile(descriptor, WindowManager.getInstance().findVisibleFrame(), project, null);
-        if (virtualFile != null) {
-            //PsiDirectory directory = PsiDirectoryFactory.getInstance(project).createDirectory(virtualFile);
+        virtualFiles = FileChooser.chooseFiles(descriptor, WindowManager.getInstance().findVisibleFrame(), project, null);
+        if (virtualFiles.length > 0) {
 
-            /*mainClassName = directory.getName();
-            char[] chars = mainClassName.toCharArray();
-            chars[0] = Character.toUpperCase(chars[0]);
-            rootName.setText(String.valueOf(chars));*/
-
-            //parser.reset(project, directory);
-            String path = virtualFile.getPath();
-            //String pkg = "";
-            textFieldInputImages.setText(path);
-
-            /*if (path.contains("java")) {
-                pkg = path.split("java/")[1].replaceAll("/", ".");
-            } else if (path.contains("src")) {
-                pkg = path.split("src/")[1].replaceAll("/", ".");
+            String path = "";
+            for(VirtualFile virtualFile : virtualFiles){
+                path += virtualFile.getPath() + ";";
             }
-            basePath = path + "/";
-            pkgText.setText(pkg);
-
-            */
-            //Logger.info("Target path " + path);
+            textFieldInputImages.setText(path);
         } else {
             //Logger.warn("Empty target path!");
         }
@@ -184,15 +186,12 @@ public class ImageResizerForm {
         FileChooserDescriptor descriptor = new FileChooserDescriptor(false, true, false, false, false, false);
         VirtualFile virtualFile = FileChooser.chooseFile(descriptor, WindowManager.getInstance().findVisibleFrame(), project, null);
         if (virtualFile != null) {
-            //PsiDirectory directory = PsiDirectoryFactory.getInstance(project).createDirectory(virtualFile);
             String path = virtualFile.getPath();
             textFieldResFolder.setText(path);
-            //Logger.info("Target path " + path);
         } else {
             //Logger.warn("Empty target path!");
         }
         frame.setAlwaysOnTop(true);
         frame.setVisible(true);
     }
-
 }
